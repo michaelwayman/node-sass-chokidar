@@ -51,15 +51,7 @@ before_install:
 
 script:
   - npm install
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $TRAVIS_NODE_VERSION == "4" ]; then
-      npm run lint || exit 1;
-    fi
   - npm test
-
-after_success:
-  - if [ $TRAVIS_OS_NAME == "linux" ] && [ $TRAVIS_NODE_VERSION == "4" ]; then
-      npm run-script coverage;
-    fi
 
 cache:
   directories:

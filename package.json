@@ -9,7 +9,8 @@
     "test": "node_modules/.bin/mocha test/{*,**/**}.js"
   },
   "files": [
-    "bin"
+    "bin",
+    "test"
   ],
   "repository": {
     "type": "git",
