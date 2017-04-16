@@ -1,0 +1,38 @@
+{
+  "name": "node-sass-chokidar",
+  "version": "0.0.1",
+  "description": "A thin wrapper around node-sass to replicate the --watch --recursive but with chokidar instead of Gaze",
+  "bin": {
+    "node-sass-chokidar": "bin/node-sass-chokidar"
+  },
+  "scripts": {
+  },
+  "files": [
+    "bin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelwayman/node-sass-chokidar.git"
+  },
+  "keywords": [
+    "node-sass",
+    "chokidar",
+    "node-sass-chokidar",
+    "libsass",
+    "preprocessor"
+  ],
+  "author": "Michael Wayman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michaelwayman/node-sass-chokidar/issues"
+  },
+  "homepage": "https://github.com/michaelwayman/node-sass-chokidar#readme",
+  "dependencies": {
+    "chokidar": "^1.6.1",
+    "meow": "^3.7.0",
+    "node-sass": "^4.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0"
+  }
+}
