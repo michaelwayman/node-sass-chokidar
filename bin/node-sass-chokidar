@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * This file is a modified version of the origin node-sass executable for here
+ * This file is a modified version of the original node-sass executable found here:
  * https://github.com/sass/node-sass/blob/master/bin/node-sass
  *
  * It has been modified to use chokidar instead of Gaze when watching directories and files.
@@ -231,7 +231,7 @@ function watch(options, emitter) {
     var graph;
     var graphOptions = {
       loadPaths: options.includePath,
-      extensions: ['scss', 'sass', 'css']
+      extensions: ['scss', 'sass']
     };
 
     if (options.directory) {

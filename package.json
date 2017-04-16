@@ -6,6 +6,7 @@
     "node-sass-chokidar": "bin/node-sass-chokidar"
   },
   "scripts": {
+    "test": "node_modules/.bin/mocha test/{*,**/**}.js"
   },
   "files": [
     "bin"
@@ -37,5 +38,6 @@
     "stdout-stream": "^1.4.0"
   },
   "devDependencies": {
+    "mocha": "^3.2.0"
   }
 }
