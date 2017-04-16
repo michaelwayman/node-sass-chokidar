@@ -10,6 +10,7 @@
 var Emitter = require('events').EventEmitter,
   forEach = require('async-foreach').forEach,
   chokidar = require('chokidar'),
+  grapher = require('sass-graph'),
   meow = require('meow'),
   util = require('util'),
   path = require('path'),
@@ -26,7 +27,6 @@ var Emitter = require('events').EventEmitter,
 
 var cli = meow({
   pkg: '../package.json',
-  // version: sass.info,
   help: [
     'Usage:',
     '  node-sass-chokidar [options] <input.scss>',
@@ -107,8 +107,7 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
-    recursive: true,
-    watch: true
+    recursive: true
   }
 });
 
@@ -170,6 +169,7 @@ function getEmitter() {
  */
 
 function getOptions(args, options) {
+
   var cssDir, sassDir, file, mapDir;
   options.src = args[0];
 
@@ -214,7 +214,6 @@ function getOptions(args, options) {
       }
     }
   }
-
   return options;
 }
 
@@ -228,17 +227,52 @@ function getOptions(args, options) {
 
 function watch(options, emitter) {
 
-  var watcher = chokidar.watch('**/*.{sass,scss}', {
-      ignored: /node_modules|\.git/
-  });
+  var buildGraph = function(options) {
+    var graph;
+    var graphOptions = {
+      loadPaths: options.includePath,
+      extensions: ['scss', 'sass', 'css']
+    };
+
+    if (options.directory) {
+      graph = grapher.parseDir(options.directory, graphOptions);
+    } else {
+      graph = grapher.parseFile(options.src, graphOptions);
+    }
+
+    return graph;
+  };
+
+  var graph = buildGraph(options);
+
+  var paths;
+  if (options.directory){
+    paths = path.resolve(options.directory, '**/*.{sass,scss}');
+  } else {
+    paths = options.src;
+  }
+
+  var watcher = chokidar.watch(paths);
 
   watcher.on('error', function(error) {
       emitter.emit.bind(emitter, 'error');
   });
 
-  watcher.on('change', function(path) {
-    renderFile(path, options, emitter);
-  })
+  watcher.on('change', function(file) {
+    var files = [file];
+
+    // descendents may be added, so we need a new graph
+    graph = buildGraph(options);
+    graph.visitAncestors(file, function(parent) {
+      files.push(parent);
+    });
+
+    files.forEach(function(file) {
+      if (path.basename(file)[0] !== '_') {
+        renderFile(file, options, emitter);
+      }
+    });
+  });
 }
 
 /**
