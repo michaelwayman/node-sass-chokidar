@@ -48,6 +48,7 @@ var cli = meow({
     '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
     '  -q, --quiet                Suppress log output except on error',
     '  -v, --version              Prints version info',
+    '  -b, --build-first          Transpiles all SCSS before watching',
     '  --output-style             CSS output style (nested | expanded | compact | compressed)',
     '  --indent-type              Indent type for output CSS (space | tab)',
     '  --indent-width             Indent width; number of spaces or tabs (maximum value: 10)',
@@ -75,7 +76,8 @@ var cli = meow({
     'source-map-embed',
     'source-map-contents',
     'source-comments',
-    'watch'
+    'watch',
+    'build-first'
   ],
   string: [
     'functions',
@@ -96,7 +98,8 @@ var cli = meow({
     o: 'output',
     x: 'omit-source-map-url',
     v: 'version',
-    w: 'watch'
+    w: 'watch',
+    b: 'build-first'
   },
   default: {
     'include-path': process.cwd(),
@@ -349,12 +352,28 @@ function run(options, emitter) {
     }
   }
 
-  if (options.watch) {
+  if (options.watch && options.buildFirst) {
+    renderDirOrFile(options, emitter);
     watch(options, emitter);
-  } else if (options.directory) {
-    renderDir(options, emitter);
+  } else if (options.watch) {
+    watch(options, emitter);
   } else {
-    render(options, emitter);
+    renderDirOrFile(options, emitter);
+  }
+}
+
+/**
+ * Conditionally render a dir or file based on options
+ *
+ * @param {Object} options
+ * @param {Object} emitter
+ * @api private
+ */
+function renderDirOrFile(options, emitter) {
+  if (options.directory) {
+    renderDir(options, emitter)
+  } else {
+    render(options, emitter)
   }
 }
 
@@ -398,9 +417,11 @@ function renderDir(options, emitter) {
         renderFile(subject, options, emitter);
       }
     }, function(successful, arr) {
-      var outputDir = path.join(process.cwd(), options.output);
-      emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
-      process.exit();
+      if (!options.watch) {
+        var outputDir = path.join(process.cwd(), options.output);
+        emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
+        process.exit();
+      }
     });
   });
 }
