@@ -108,6 +108,7 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
+    'skip-initial': false,
   }
 });
 
@@ -352,7 +353,7 @@ function run(options, emitter) {
   }
 
   if (options.watch) {
-    watch(options, emitter)
+    watch(options, emitter);
   }
 }
 
