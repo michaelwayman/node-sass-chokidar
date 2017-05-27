@@ -3,6 +3,7 @@
 Bug fixes are documented as being part of the "next release" but are made immediately available in the patch releases.
 
 
+# Releases
 
 #### 1.0.0 (Not released yet)
  - Switches `--watch` behavior to build all files before watching. Can be disabled with `--skip-initial` flag.
