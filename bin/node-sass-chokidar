@@ -355,7 +355,7 @@ function renderDir(options, emitter) {
     if (err) {
       return emitter.emit('error', util.format('You do not have permission to access this path: %s.', err.path));
     } else if (!files.length) {
-      return emitter.emit('error', 'No input file was found.');
+      return emitter.emit('warn', 'No input files were found.');
     }
 
     forEach(files, function(subject) {
