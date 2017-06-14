@@ -245,14 +245,18 @@ function watch(options, emitter) {
 
   var graph = buildGraph(options);
 
-  var paths;
-  if (options.directory){
-    paths = path.resolve(options.directory, '**/*.{sass,scss}');
-  } else {
-    paths = options.src;
+  var paths = [];
+  if (options.directory) {
+    paths.push(path.resolve(options.directory, '**/*.{sass,scss}'));
   }
 
-  var watcher = chokidar.watch(paths);
+  for (var i in graph.index) {
+    paths.push(i);
+  }
+
+  var watcher = chokidar.watch(paths, {
+    followSymlinks: options.follow
+  });
 
   watcher.on('error', function(error) {
       emitter.emit.bind(emitter, 'error');
@@ -265,6 +269,14 @@ function watch(options, emitter) {
     graph = buildGraph(options);
     graph.visitAncestors(file, function(parent) {
       files.push(parent);
+    });
+
+    // Add children to watcher
+    graph.visitDescendents(file, function(child) {
+      if (paths.indexOf(child) === -1) {
+        paths.push(child);
+        watcher.add(child);
+      }
     });
 
     files.forEach(function(file) {
