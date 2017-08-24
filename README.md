@@ -4,7 +4,7 @@
 
 A thin wrapper around node-sass executable to use chokidar instead of Gaze when watching files.
 
-All the functionality of the node-sass executable is still in tact, the only difference being chokidar instead of Gaze for watching files.
+All the functionality of the node-sass executable is still intact, the only difference being chokidar instead of Gaze for watching files.
 
 Why? Because Gaze in docker and various virtual machines uses a lot of resources whereas chokidar does not.
 Read about the advantages of [chokidar](https://github.com/paulmillr/chokidar)
