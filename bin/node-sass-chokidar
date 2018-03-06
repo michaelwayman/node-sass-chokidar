@@ -42,7 +42,7 @@ var cli = meow({
     '',
     'Options',
     '  -w, --watch                Watch a directory or file',
-    '  -r, --recursive            Recursively watch directories or files (always true, non-configurable)',
+    '  -m, --match-regex          Only watches files that match the regular expression',
     '  -o, --output               Output directory',
     '  -x, --omit-source-map-url  Omit source map URL comment from output',
     '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
@@ -72,7 +72,6 @@ var cli = meow({
     'indented-syntax',
     'omit-source-map-url',
     'quiet',
-    'recursive',
     'source-map-embed',
     'source-map-contents',
     'source-comments',
@@ -87,14 +86,14 @@ var cli = meow({
     'output',
     'output-style',
     'precision',
-    'source-map-root'
+    'source-map-root',
+    'match-regex'
   ],
   alias: {
     c: 'source-comments',
     i: 'indented-syntax',
     q: 'quiet',
     o: 'output',
-    r: 'recursive',
     x: 'omit-source-map-url',
     v: 'version',
     w: 'watch'
@@ -107,7 +106,6 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
-    recursive: true
   }
 });
 
@@ -174,7 +172,7 @@ function getOptions(args, options) {
   options.src = args[0];
 
   // Instead of removing `recursive` altogether I am setting it to true for back-compatibility
-  options.recursive = true;
+  // options.recursive = true;
 
   if (args[1]) {
     options.dest = path.resolve(args[1]);
@@ -217,6 +215,18 @@ function getOptions(args, options) {
   return options;
 }
 
+function passesRegex(options, file) {
+  if (options.matchRegex) {
+    var fileName = file.split('/');
+    fileName = fileName[fileName.length - 1];
+    var reg = RegExp(options.matchRegex)
+    if (!reg.test(fileName)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Watch
  *
@@ -248,10 +258,13 @@ function watch(options, emitter) {
   var paths = [];
   if (options.directory) {
     paths.push(path.resolve(options.directory, '**/*.{sass,scss}'));
+    paths.filter(function(item) { return passesRegex(options, item); });
   }
 
   for (var i in graph.index) {
-    paths.push(i);
+    if (passesRegex(options, i)) {
+      paths.push(i);
+    }
   }
 
   var watcher = chokidar.watch(paths, {
@@ -262,18 +275,23 @@ function watch(options, emitter) {
       emitter.emit.bind(emitter, 'error');
   });
 
-  watcher.on('change', function(file) {
+  function watcherHandler(file) {
+    if (!passesRegex(options, file)) {
+      return;
+    }
     var files = [file];
 
     // descendents may be added, so we need a new graph
     graph = buildGraph(options);
     graph.visitAncestors(file, function(parent) {
-      files.push(parent);
+      if (passesRegex(options, parent)) {
+        files.push(parent);
+      }
     });
 
     // Add children to watcher
     graph.visitDescendents(file, function(child) {
-      if (paths.indexOf(child) === -1) {
+      if (paths.indexOf(child) === -1 && passesRegex(options, file)) {
         paths.push(child);
         watcher.add(child);
       }
@@ -284,7 +302,9 @@ function watch(options, emitter) {
         renderFile(file, options, emitter);
       }
     });
-  });
+  }
+
+  watcher.on('change', watcherHandler).on('add', watcherHandler);
 }
 
 /**
