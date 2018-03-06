@@ -5,8 +5,10 @@ Bug fixes are documented as being part of the "next release" but are made immedi
 
 # Releases
 
-#### 1.0.0 (Not released yet)
- - Switches `--watch` behavior to build all files before watching. Can be disabled with `--skip-initial` flag.
+#### 1.0.0 (Latest release)
+ - Switches `--watch` behavior to build all files before watching. Fixes [#31]
+ - Removes `--recursive` flag since it didn't do anything.
+ - Adds a `--match-regex` option that takes a regex and will ignore all files not matching the regular expression. [#40] and [#24]
 
 #### 0.1.0 (Next Minor release)
  - Features
