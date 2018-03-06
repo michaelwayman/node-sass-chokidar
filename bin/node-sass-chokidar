@@ -371,7 +371,9 @@ function renderFile(file, options, emitter) {
   if (options.watch) {
     emitter.emit('warn', util.format('=> changed: %s', file));
   }
-  render(options, emitter);
+  if (passesRegex(options, file)) {
+    render(options, emitter);
+  }
 }
 
 /**
@@ -392,7 +394,9 @@ function renderDir(options, emitter) {
 
     forEach(files, function(subject) {
       emitter.once('done', this.async());
-      renderFile(subject, options, emitter);
+      if (passesRegex(options, subject)) {
+        renderFile(subject, options, emitter);
+      }
     }, function(successful, arr) {
       var outputDir = path.join(process.cwd(), options.output);
       emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
