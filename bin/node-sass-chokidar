@@ -48,6 +48,7 @@ var cli = meow({
     '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
     '  -q, --quiet                Suppress log output except on error',
     '  -v, --version              Prints version info',
+    '  --skip-initial             Skips initial build when passing the --watch flag',
     '  --output-style             CSS output style (nested | expanded | compact | compressed)',
     '  --indent-type              Indent type for output CSS (space | tab)',
     '  --indent-width             Indent width; number of spaces or tabs (maximum value: 10)',
@@ -72,6 +73,7 @@ var cli = meow({
     'indented-syntax',
     'omit-source-map-url',
     'quiet',
+    'skip-initial',
     'source-map-embed',
     'source-map-contents',
     'source-comments',
@@ -106,6 +108,7 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
+    'skip-initial': false,
   }
 });
 
@@ -268,7 +271,8 @@ function watch(options, emitter) {
   }
 
   var watcher = chokidar.watch(paths, {
-    followSymlinks: options.follow
+    followSymlinks: options.follow,
+    ignoreInitial: options.skipInitial,
   });
 
   watcher.on('error', function(error) {

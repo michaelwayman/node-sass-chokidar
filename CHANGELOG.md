@@ -5,12 +5,15 @@ Bug fixes are documented as being part of the "next release" but are made immedi
 
 # Releases
 
-#### 1.0.0 (Latest release)
+#### 1.1.0
+  - Adds `--skip-initial` flag to NOT build all the scss files when you first run node-sass-chokidar using the `--watch` flag.
+
+#### 1.0.0
  - Switches `--watch` behavior to build all files before watching. Fixes [#31]
  - Removes `--recursive` flag since it didn't do anything.
  - Adds a `--match-regex` option that takes a regex and will ignore all files not matching the regular expression. [#40] and [#24]
 
-#### 0.1.0 (Next Minor release)
+#### 0.1.0
  - Features
      - [#9](https://github.com/michaelwayman/node-sass-chokidar/issues/9) add support for node 8 thanks to @anmonteiro
  - Bug fixes
