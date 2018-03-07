@@ -42,12 +42,13 @@ var cli = meow({
     '',
     'Options',
     '  -w, --watch                Watch a directory or file',
-    '  -r, --recursive            Recursively watch directories or files (always true, non-configurable)',
+    '  -m, --match-regex          Only watches files that match the regular expression',
     '  -o, --output               Output directory',
     '  -x, --omit-source-map-url  Omit source map URL comment from output',
     '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
     '  -q, --quiet                Suppress log output except on error',
     '  -v, --version              Prints version info',
+    '  --skip-initial             Skips initial build when passing the --watch flag',
     '  --output-style             CSS output style (nested | expanded | compact | compressed)',
     '  --indent-type              Indent type for output CSS (space | tab)',
     '  --indent-width             Indent width; number of spaces or tabs (maximum value: 10)',
@@ -63,7 +64,7 @@ var cli = meow({
     '  --error-bell               Output a bell character on errors',
     '  --importer                 Path to .js file containing custom importer',
     '  --functions                Path to .js file containing custom functions',
-    '  --use-polling              Watch using polling',
+    '  --use-polling              Watch using polling (use chokidars\'s polling option',
     '  --help                     Print usage info'
   ].join('\n')
 }, {
@@ -74,7 +75,7 @@ var cli = meow({
     'indented-syntax',
     'omit-source-map-url',
     'quiet',
-    'recursive',
+    'skip-initial',
     'source-map-embed',
     'source-map-contents',
     'source-comments',
@@ -89,14 +90,14 @@ var cli = meow({
     'output',
     'output-style',
     'precision',
-    'source-map-root'
+    'source-map-root',
+    'match-regex'
   ],
   alias: {
     c: 'source-comments',
     i: 'indented-syntax',
     q: 'quiet',
     o: 'output',
-    r: 'recursive',
     x: 'omit-source-map-url',
     v: 'version',
     w: 'watch'
@@ -109,8 +110,8 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
-    recursive: true,
-    'use-polling': false
+    'use-polling': false,
+    'skip-initial': false,
   }
 });
 
@@ -177,7 +178,7 @@ function getOptions(args, options) {
   options.src = args[0];
 
   // Instead of removing `recursive` altogether I am setting it to true for back-compatibility
-  options.recursive = true;
+  // options.recursive = true;
 
   if (args[1]) {
     options.dest = path.resolve(args[1]);
@@ -220,6 +221,18 @@ function getOptions(args, options) {
   return options;
 }
 
+function passesRegex(options, file) {
+  if (options.matchRegex) {
+    var fileName = file.split('/');
+    fileName = fileName[fileName.length - 1];
+    var reg = RegExp(options.matchRegex)
+    if (!reg.test(fileName)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Watch
  *
@@ -251,33 +264,42 @@ function watch(options, emitter) {
   var paths = [];
   if (options.directory) {
     paths.push(path.resolve(options.directory, '**/*.{sass,scss}'));
+    paths.filter(function(item) { return passesRegex(options, item); });
   }
 
   for (var i in graph.index) {
-    paths.push(i);
+    if (passesRegex(options, i)) {
+      paths.push(i);
+    }
   }
 
   var watcher = chokidar.watch(paths, {
     followSymlinks: options.follow,
-    usePolling: options.usePolling
+    usePolling: options.usePolling,
+    ignoreInitial: options.skipInitial,
   });
 
   watcher.on('error', function(error) {
       emitter.emit.bind(emitter, 'error');
   });
 
-  watcher.on('change', function(file) {
+  function watcherHandler(file) {
+    if (!passesRegex(options, file)) {
+      return;
+    }
     var files = [file];
 
     // descendents may be added, so we need a new graph
     graph = buildGraph(options);
     graph.visitAncestors(file, function(parent) {
-      files.push(parent);
+      if (passesRegex(options, parent)) {
+        files.push(parent);
+      }
     });
 
     // Add children to watcher
     graph.visitDescendents(file, function(child) {
-      if (paths.indexOf(child) === -1) {
+      if (paths.indexOf(child) === -1 && passesRegex(options, file)) {
         paths.push(child);
         watcher.add(child);
       }
@@ -288,7 +310,9 @@ function watch(options, emitter) {
         renderFile(file, options, emitter);
       }
     });
-  });
+  }
+
+  watcher.on('change', watcherHandler).on('add', watcherHandler);
 }
 
 /**
@@ -355,7 +379,9 @@ function renderFile(file, options, emitter) {
   if (options.watch) {
     emitter.emit('warn', util.format('=> changed: %s', file));
   }
-  render(options, emitter);
+  if (passesRegex(options, file)) {
+    render(options, emitter);
+  }
 }
 
 /**
@@ -376,7 +402,9 @@ function renderDir(options, emitter) {
 
     forEach(files, function(subject) {
       emitter.once('done', this.async());
-      renderFile(subject, options, emitter);
+      if (passesRegex(options, subject)) {
+        renderFile(subject, options, emitter);
+      }
     }, function(successful, arr) {
       var outputDir = path.join(process.cwd(), options.output);
       emitter.emit('warn', util.format('Wrote %s CSS files to %s', arr.length, outputDir));
