@@ -308,7 +308,11 @@ function watch(options, emitter) {
     });
   }
 
-  watcher.on('change', watcherHandler).on('add', watcherHandler);
+  watcher.on('change', watcherHandler).on('add', function(file) {
+    if (file.indexOf(path.resolve(options.output)) !== -1) {
+      watcherHandler(file);
+    }
+  });
 }
 
 /**
