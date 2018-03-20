@@ -64,12 +64,14 @@ var cli = meow({
     '  --error-bell               Output a bell character on errors',
     '  --importer                 Path to .js file containing custom importer',
     '  --functions                Path to .js file containing custom functions',
+    '  --use-polling              Watch using polling (chokidars\'s polling option)',
     '  --help                     Print usage info'
   ].join('\n')
 }, {
   boolean: [
     'error-bell',
     'follow',
+    'use-polling',
     'indented-syntax',
     'omit-source-map-url',
     'quiet',
@@ -108,6 +110,7 @@ var cli = meow({
     'output-style': 'nested',
     precision: 5,
     quiet: false,
+    'use-polling': false,
     'skip-initial': false,
   }
 });
@@ -272,6 +275,7 @@ function watch(options, emitter) {
 
   var watcher = chokidar.watch(paths, {
     followSymlinks: options.follow,
+    usePolling: options.usePolling,
     ignoreInitial: options.skipInitial,
   });
 
