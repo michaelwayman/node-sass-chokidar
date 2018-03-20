@@ -5,6 +5,9 @@ Bug fixes are documented as being part of the "next release" but are made immedi
 
 # Releases
 
+#### 1.2.0
+  - Adds `--use-polling` flag to allow the use of polling.
+
 #### 1.1.0
   - Adds `--skip-initial` flag to NOT build all the scss files when you first run node-sass-chokidar using the `--watch` flag.
 
