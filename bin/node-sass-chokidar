@@ -64,7 +64,7 @@ var cli = meow({
     '  --error-bell               Output a bell character on errors',
     '  --importer                 Path to .js file containing custom importer',
     '  --functions                Path to .js file containing custom functions',
-    '  --use-polling              Watch using polling (use chokidars\'s polling option',
+    '  --use-polling              Watch using polling (chokidars\'s polling option)',
     '  --help                     Print usage info'
   ].join('\n')
 }, {
