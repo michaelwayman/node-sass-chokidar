@@ -7,91 +7,91 @@
  * It has been modified to use chokidar instead of Gaze when watching directories and files.
  */
 
-var Emitter = require('events').EventEmitter,
-  forEach = require('async-foreach').forEach,
-  chokidar = require('chokidar'),
-  grapher = require('sass-graph'),
-  meow = require('meow'),
-  util = require('util'),
-  path = require('path'),
-  glob = require('glob'),
-  sass = require('node-sass/lib').sass,
-  render = require('node-sass/lib/render'),
-  stdout = require('stdout-stream'),
-  stdin = require('get-stdin'),
-  fs = require('fs');
+ var Emitter = require('events').EventEmitter,
+ forEach = require('async-foreach').forEach,
+ chokidar = require('chokidar'),
+ grapher = require('sass-graph'),
+ meow = require('meow'),
+ util = require('util'),
+ path = require('path'),
+ glob = require('glob'),
+ sass = require('node-sass/lib').sass,
+ render = require('node-sass/lib/render'),
+ stdout = require('stdout-stream'),
+ stdin = require('get-stdin'),
+ fs = require('fs');
 
 /**
  * Initialize CLI
  */
 
-var cli = meow({
+ var cli = meow({
   pkg: '../package.json',
   help: [
-    'Usage:',
-    '  node-sass-chokidar [options] <input.scss>',
-    '  cat <input.scss> | node-sass-chokidar [options] > output.css',
-    '',
-    'Example: Compile foobar.scss to foobar.css',
-    '  node-sass-chokidar --output-style compressed foobar.scss > foobar.css',
-    '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.css',
-    '',
-    'Example: Watch the sass directory for changes, compile with sourcemaps to the css directory',
-    '  node-sass-chokidar --watch --output css',
-    '    --source-map true --source-map-contents sass',
-    '',
-    'Options',
-    '  -w, --watch                Watch a directory or file',
-    '  -m, --match-regex          Only watches files in a directory that match the regular expression',
-    '  -o, --output               Output directory',
-    '  -x, --omit-source-map-url  Omit source map URL comment from output',
-    '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
-    '  -q, --quiet                Suppress log output except on error',
-    '  -v, --version              Prints version info',
-    '  --skip-initial             Skips initial build when passing the --watch flag',
-    '  --output-style             CSS output style (nested | expanded | compact | compressed)',
-    '  --indent-type              Indent type for output CSS (space | tab)',
-    '  --indent-width             Indent width; number of spaces or tabs (maximum value: 10)',
-    '  --linefeed                 Linefeed style (cr | crlf | lf | lfcr)',
-    '  --source-comments          Include debug info in output',
-    '  --source-map               Emit source map',
-    '  --source-map-contents      Embed include contents in map',
-    '  --source-map-embed         Embed sourceMappingUrl as data URI',
-    '  --source-map-root          Base path, will be emitted in source-map as is',
-    '  --include-path             Path to look for imported files',
-    '  --follow                   Follow symlinked directories',
-    '  --precision                The amount of precision allowed in decimal numbers',
-    '  --error-bell               Output a bell character on errors',
-    '  --importer                 Path to .js file containing custom importer',
-    '  --functions                Path to .js file containing custom functions',
-    '  --use-polling              Watch using polling (chokidars\'s polling option)',
-    '  --help                     Print usage info'
+  'Usage:',
+  '  node-sass-chokidar [options] <input.scss>',
+  '  cat <input.scss> | node-sass-chokidar [options] > output.css',
+  '',
+  'Example: Compile foobar.scss to foobar.css',
+  '  node-sass-chokidar --output-style compressed foobar.scss > foobar.css',
+  '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.css',
+  '',
+  'Example: Watch the sass directory for changes, compile with sourcemaps to the css directory',
+  '  node-sass-chokidar --watch --output css',
+  '    --source-map true --source-map-contents sass',
+  '',
+  'Options',
+  '  -w, --watch                Watch a directory or file',
+  '  -m, --match-regex          Only watches files in a directory that match the regular expression',
+  '  -o, --output               Output directory',
+  '  -x, --omit-source-map-url  Omit source map URL comment from output',
+  '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
+  '  -q, --quiet                Suppress log output except on error',
+  '  -v, --version              Prints version info',
+  '  --skip-initial             Skips initial build when passing the --watch flag',
+  '  --output-style             CSS output style (nested | expanded | compact | compressed)',
+  '  --indent-type              Indent type for output CSS (space | tab)',
+  '  --indent-width             Indent width; number of spaces or tabs (maximum value: 10)',
+  '  --linefeed                 Linefeed style (cr | crlf | lf | lfcr)',
+  '  --source-comments          Include debug info in output',
+  '  --source-map               Emit source map',
+  '  --source-map-contents      Embed include contents in map',
+  '  --source-map-embed         Embed sourceMappingUrl as data URI',
+  '  --source-map-root          Base path, will be emitted in source-map as is',
+  '  --include-path             Path to look for imported files',
+  '  --follow                   Follow symlinked directories',
+  '  --precision                The amount of precision allowed in decimal numbers',
+  '  --error-bell               Output a bell character on errors',
+  '  --importer                 Path to .js file containing custom importer',
+  '  --functions                Path to .js file containing custom functions',
+  '  --use-polling              Watch using polling (chokidars\'s polling option)',
+  '  --help                     Print usage info'
   ].join('\n')
 }, {
   boolean: [
-    'error-bell',
-    'follow',
-    'use-polling',
-    'indented-syntax',
-    'omit-source-map-url',
-    'quiet',
-    'skip-initial',
-    'source-map-embed',
-    'source-map-contents',
-    'source-comments',
-    'watch'
+  'error-bell',
+  'follow',
+  'use-polling',
+  'indented-syntax',
+  'omit-source-map-url',
+  'quiet',
+  'skip-initial',
+  'source-map-embed',
+  'source-map-contents',
+  'source-comments',
+  'watch'
   ],
   string: [
-    'functions',
-    'importer',
-    'include-path',
-    'indent-type',
-    'linefeed',
-    'output',
-    'output-style',
-    'precision',
-    'source-map-root',
-    'match-regex'
+  'functions',
+  'importer',
+  'include-path',
+  'indent-type',
+  'linefeed',
+  'output',
+  'output-style',
+  'precision',
+  'source-map-root',
+  'match-regex'
   ],
   alias: {
     c: 'source-comments',
@@ -123,7 +123,7 @@ var cli = meow({
  * @api private
  */
 
-function isDirectory(filePath) {
+ function isDirectory(filePath) {
   var isDir = false;
   try {
     var absolutePath = path.resolve(filePath);
@@ -140,7 +140,7 @@ function isDirectory(filePath) {
  * @api private
  */
 
-function getEmitter() {
+ function getEmitter() {
   var emitter = new Emitter();
 
   emitter.on('error', function(err) {
@@ -172,7 +172,7 @@ function getEmitter() {
  * @api private
  */
 
-function getOptions(args, options) {
+ function getOptions(args, options) {
 
   var cssDir, sassDir, file, mapDir;
   options.src = args[0];
@@ -241,7 +241,7 @@ function passesRegex(options, file) {
  * @api private
  */
 
-function watch(options, emitter) {
+ function watch(options, emitter) {
 
   var buildGraph = function(options) {
     var graph;
@@ -267,7 +267,7 @@ function watch(options, emitter) {
   }
 
   for (var i in graph.index) {
-      paths.push(i);
+    paths.push(i);
   }
 
   var watcher = chokidar.watch(paths, {
@@ -277,7 +277,7 @@ function watch(options, emitter) {
   });
 
   watcher.on('error', function(error) {
-      emitter.emit.bind(emitter, 'error');
+    emitter.emit.bind(emitter, 'error');
   });
 
   function changeHandler(file) {
@@ -289,7 +289,7 @@ function watch(options, emitter) {
     // descendents may be added, so we need a new graph
     graph = buildGraph(options);
     graph.visitAncestors(file, function(parent) {
-        files.push(parent);
+      files.push(parent);
     });
 
     // Add children to watcher
@@ -316,18 +316,18 @@ function watch(options, emitter) {
   }
 
   watcher
-    .on('change', changeHandler)
-    .on('add', function(file) {
-      if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
-        if (options.directory) {
-          if (file.indexOf(path.resolve(options.directory)) !== -1) {
-            renderFile(file, options, emitter);
-          }
-        } else if (file.indexOf(path.resolve(options.src)) !== -1) {
+  .on('change', changeHandler)
+  .on('add', function(file) {
+    if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
+      if (options.directory) {
+        if (file.indexOf(path.resolve(options.directory)) !== -1) {
           renderFile(file, options, emitter);
         }
+      } else if (file.indexOf(path.resolve(options.src)) !== -1) {
+        renderFile(file, options, emitter);
       }
-    })
+    }
+  })
 }
 
 /**
@@ -338,7 +338,7 @@ function watch(options, emitter) {
  * @api private
  */
 
-function run(options, emitter) {
+ function run(options, emitter) {
   if (!Array.isArray(options.includePath)) {
     options.includePath = [options.includePath];
   }
@@ -389,7 +389,7 @@ function run(options, emitter) {
  * @param {Object} emitter
  * @api private
  */
-function renderFile(file, options, emitter) {
+ function renderFile(file, options, emitter) {
   options = getOptions([path.resolve(file)], options);
   if (options.watch) {
     emitter.emit('warn', util.format('=> changed: %s', file));
@@ -406,7 +406,7 @@ function renderFile(file, options, emitter) {
  * @param {Object} emitter
  * @api private
  */
-function renderDir(options, emitter) {
+ function renderDir(options, emitter) {
   var globPath = path.resolve(options.directory, '**/*.{sass,scss}');
   glob(globPath, { ignore: '**/_*', follow: options.follow }, function(err, files) {
     if (err) {
@@ -432,14 +432,14 @@ function renderDir(options, emitter) {
  * Arguments and options
  */
 
-var options = getOptions(cli.input, cli.flags);
-var emitter = getEmitter();
+ var options = getOptions(cli.input, cli.flags);
+ var emitter = getEmitter();
 
 /**
  * Show usage if no arguments are supplied
  */
 
-if (!options.src && process.stdin.isTTY) {
+ if (!options.src && process.stdin.isTTY) {
   emitter.emit('error', [
     'Provide a Sass file to render',
     '',
@@ -450,14 +450,14 @@ if (!options.src && process.stdin.isTTY) {
     'Example: Watch the sass directory for changes, compile with sourcemaps to the css directory',
     '  node-sass-chokidar --watch --output css',
     '    --source-map true --source-map-contents sass'
-  ].join('\n'));
+    ].join('\n'));
 }
 
 /**
  * Apply arguments
  */
 
-if (options.src) {
+ if (options.src) {
   if (isDirectory(options.src)) {
     options.directory = options.src;
   }
