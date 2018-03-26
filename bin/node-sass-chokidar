@@ -264,13 +264,10 @@ function watch(options, emitter) {
   var paths = [];
   if (options.directory) {
     paths.push(path.resolve(options.directory, '**/*.{sass,scss}'));
-    paths.filter(function(item) { return passesRegex(options, item); });
   }
 
   for (var i in graph.index) {
-    if (passesRegex(options, i)) {
       paths.push(i);
-    }
   }
 
   var watcher = chokidar.watch(paths, {
@@ -283,7 +280,7 @@ function watch(options, emitter) {
       emitter.emit.bind(emitter, 'error');
   });
 
-  function watcherHandler(file) {
+  function changeHandler(file) {
     if (!passesRegex(options, file)) {
       return;
     }
@@ -292,34 +289,45 @@ function watch(options, emitter) {
     // descendents may be added, so we need a new graph
     graph = buildGraph(options);
     graph.visitAncestors(file, function(parent) {
-      if (passesRegex(options, parent)) {
         files.push(parent);
-      }
     });
 
     // Add children to watcher
     graph.visitDescendents(file, function(child) {
-      if (paths.indexOf(child) === -1 && passesRegex(options, file)) {
+      if (paths.indexOf(child) === -1) {
         paths.push(child);
         watcher.add(child);
       }
     });
 
     files.forEach(function(file) {
-      if (path.basename(file)[0] !== '_') {
-        renderFile(file, options, emitter);
+      if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
+        if (options.directory) {
+          if (file.indexOf(path.resolve(options.directory)) !== -1) {
+            renderFile(file, options, emitter);
+          }
+        } else {
+          if (file.indexOf(path.resolve(options.src)) !== -1) {
+            renderFile(file, options, emitter);
+          }
+        }
       }
     });
   }
 
-  watcher.on('change', watcherHandler).on('add', function(file) {
-    if (options.directory && file.indexOf(path.resolve(options.directory)) !== -1) {
-        watcherHandler(file);
-    }
-    else {
-      watcherHandler(file);
-    }
-  });
+  watcher
+    .on('change', changeHandler)
+    .on('add', function(file) {
+      if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
+        if (options.directory) {
+          if (file.indexOf(path.resolve(options.directory)) !== -1) {
+            renderFile(file, options, emitter);
+          }
+        } else if (file.indexOf(path.resolve(options.src)) !== -1) {
+          renderFile(file, options, emitter);
+        }
+      }
+    })
 }
 
 /**
