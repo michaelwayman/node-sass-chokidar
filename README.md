@@ -16,16 +16,22 @@ The cause of this is the node-sass dependency on [Gaze](https://github.com/shama
 
 ```
 # Build a directory
-node-sass-chokidar ./src -o ./src
+node-sass-chokidar ./src -o ./build
 
 # Watch a directory:
-node-sass-chokidar ./src -o ./src --watch
+node-sass-chokidar ./src -o ./build --watch
 
 # Watch a directory, don't perform an initial build until a change has occured:
-node-sass-chokidar ./src -o ./src --watch
+node-sass-chokidar ./src -o ./build --watch --skip-initial
 
-# Watch a single file, don't perform an initial build until a change has occured:
-node-sass-chokidar --include-path ./node_modules/ ./src/index.scss ./build/index.css --watch --skip-initial
+# Watch a directory, include node_modules import path so we can import from there e.g. @import 'bulma/bulma.sass';
+node-sass-chokidar --include-path ./node_modules/ ./src -o ./src --watch
+
+# Build a file
+node-sass-chokidar ./src/index.scss ./build/index.css --watch --skip-initial
+
+# Watch a single file and don't perform an initial build until a change has occured:
+node-sass-chokidar ./src/index.scss ./build/index.css --watch --skip-initial
 ```
 
 ____
