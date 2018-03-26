@@ -28,7 +28,7 @@ node-sass-chokidar ./src -o ./build --watch --skip-initial
 node-sass-chokidar --include-path ./node_modules/ ./src -o ./src --watch
 
 # Build a file
-node-sass-chokidar ./src/index.scss ./build/index.css --watch --skip-initial
+node-sass-chokidar ./src/index.scss ./build/index.css
 
 # Watch a single file and don't perform an initial build until a change has occured:
 node-sass-chokidar ./src/index.scss ./build/index.css --watch --skip-initial
