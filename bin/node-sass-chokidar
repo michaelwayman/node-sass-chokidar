@@ -65,6 +65,7 @@
   '  --importer                 Path to .js file containing custom importer',
   '  --functions                Path to .js file containing custom functions',
   '  --use-polling              Watch using polling (chokidars\'s polling option)',
+  '  --polling-interval         Interval of filesystem folling if polling is being used',
   '  --help                     Print usage info'
   ].join('\n')
 }, {
@@ -91,7 +92,8 @@
   'output-style',
   'precision',
   'source-map-root',
-  'match-regex'
+  'match-regex',
+  'polling-interval',
   ],
   alias: {
     c: 'source-comments',
@@ -112,6 +114,7 @@
     quiet: false,
     'use-polling': false,
     'skip-initial': false,
+    'polling-interval': 100,
   }
 });
 
@@ -273,6 +276,7 @@ function passesRegex(options, file) {
   var watcher = chokidar.watch(paths, {
     followSymlinks: options.follow,
     usePolling: options.usePolling,
+    interval: +options.pollingInterval,
     ignoreInitial: options.skipInitial,
   });
 
