@@ -30,11 +30,11 @@
   help: [
   'Usage:',
   '  node-sass-chokidar [options] <input.scss>',
-  '  cat <input.scss> | node-sass-chokidar [options] > output.css',
+  '  cat <input.scss> | node-sass-chokidar [options] > output.module.css',
   '',
-  'Example: Compile foobar.scss to foobar.css',
-  '  node-sass-chokidar --output-style compressed foobar.scss > foobar.css',
-  '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.css',
+  'Example: Compile foobar.scss to foobar.module.css',
+  '  node-sass-chokidar --output-style compressed foobar.scss > foobar.module.css',
+  '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.module.css',
   '',
   'Example: Watch the sass directory for changes, compile with sourcemaps to the css directory',
   '  node-sass-chokidar --watch --output css',
@@ -188,14 +188,14 @@
   } else if (options.output) {
     options.dest = path.join(
       path.resolve(options.output),
-      [path.basename(options.src, path.extname(options.src)), '.css'].join(''));  // replace ext.
+      [path.basename(options.src, path.extname(options.src)), '.module.css'].join(''));  // replace ext.
   }
 
   if (options.directory) {
     sassDir = path.resolve(options.directory);
     file = path.relative(sassDir, args[0]);
     cssDir = path.resolve(options.output);
-    options.dest = path.join(cssDir, file).replace(path.extname(file), '.css');
+    options.dest = path.join(cssDir, file).replace(path.extname(file), '.module.css');
   }
 
   if (options.sourceMap) {
@@ -217,7 +217,7 @@
         sassDir = path.resolve(options.directory);
         file = path.relative(sassDir, args[0]);
         mapDir = path.resolve(options.sourceMapOriginal);
-        options.sourceMap = path.join(mapDir, file).replace(path.extname(file), '.css.map');
+        options.sourceMap = path.join(mapDir, file).replace(path.extname(file), '.module.css.map');
       }
     }
   }
@@ -447,9 +447,9 @@ function passesRegex(options, file) {
   emitter.emit('error', [
     'Provide a Sass file to render',
     '',
-    'Example: Compile foobar.scss to foobar.css',
-    '  node-sass-chokidar --output-style compressed foobar.scss > foobar.css',
-    '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.css',
+    'Example: Compile foobar.scss to foobar.module.css',
+    '  node-sass-chokidar --output-style compressed foobar.scss > foobar.module.css',
+    '  cat foobar.scss | node-sass-chokidar --output-style compressed > foobar.module.css',
     '',
     'Example: Watch the sass directory for changes, compile with sourcemaps to the css directory',
     '  node-sass-chokidar --watch --output css',
