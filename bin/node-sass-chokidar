@@ -311,7 +311,7 @@ function passesRegex(options, file) {
     });
 
     files.forEach(function(file) {
-      if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
+      if (path.basename(file)[0] !== '_' && passesRegex(options, file) && (file.endsWith('.scss') || file.endsWith('.sass')) ) {
         if (options.directory) {
           if (file.indexOf(path.resolve(options.directory)) !== -1) {
             renderFile(file, options, emitter);
@@ -328,7 +328,7 @@ function passesRegex(options, file) {
   watcher
   .on('change', changeHandler)
   .on('add', function(file) {
-    if (path.basename(file)[0] !== '_' && passesRegex(options, file)) {
+    if (path.basename(file)[0] !== '_' && passesRegex(options, file) && (file.endsWith('.scss') || file.endsWith('.sass')) ) {
       if (options.directory) {
         if (file.indexOf(path.resolve(options.directory)) !== -1) {
           renderFile(file, options, emitter);
