@@ -45,6 +45,7 @@ ____
     -i, --indented-syntax      Treat data from stdin as sass code (versus scss),
     -q, --quiet                Suppress log output except on error,
     -v, --version              Prints version info,
+    --ext,                     Custom output file extension,
     --skip-initial             Skips initial build when passing the --watch flag,
     --output-style             CSS output style (nested | expanded | compact | compressed),
     --indent-type              Indent type for output CSS (space | tab),

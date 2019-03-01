@@ -48,6 +48,7 @@
   '  -i, --indented-syntax      Treat data from stdin as sass code (versus scss)',
   '  -q, --quiet                Suppress log output except on error',
   '  -v, --version              Prints version info',
+  '  --ext,                     Custom output file extension',
   '  --skip-initial             Skips initial build when passing the --watch flag',
   '  --output-style             CSS output style (nested | expanded | compact | compressed)',
   '  --indent-type              Indent type for output CSS (space | tab)',
@@ -94,6 +95,7 @@
   'source-map-root',
   'match-regex',
   'polling-interval',
+  'ext'
   ],
   alias: {
     c: 'source-comments',
@@ -115,6 +117,7 @@
     'use-polling': false,
     'skip-initial': false,
     'polling-interval': 100,
+    'ext': 'css'
   }
 });
 
@@ -201,7 +204,7 @@
     sassDir = path.resolve(options.directory);
     file = path.relative(sassDir, args[0]);
     cssDir = path.resolve(options.output);
-    options.dest = path.join(cssDir, file).replace(path.extname(file), '.css');
+    options.dest = path.join(cssDir, file).replace(path.extname(file), '.' + options.ext);
   }
 
   if (options.sourceMap) {
