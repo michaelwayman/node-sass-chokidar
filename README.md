@@ -63,7 +63,7 @@ ____
     --importer                 Path to .js file containing custom importer,
     --functions                Path to .js file containing custom functions,
     --use-polling              Watch using polling (chokidar's polling option),
-    --polling-interval         Interval of filesystem folling if polling is being used,
+    --polling-interval         Interval of filesystem polling if polling is being used,
     --help                     Print usage info
 ```
 
