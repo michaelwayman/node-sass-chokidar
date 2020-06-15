@@ -5,8 +5,8 @@ Bug fixes are documented as being part of the "next release" but are made immedi
 
 # Releases
 
-#### 1.3.0
-  - Adds `--recursive` flag back.
+#### 1.5.0
+  - Adds `--recursive` flag back, defaults to true.
   - Fixed bug with source mapping
   - Upgraded to use the latest node-sass
 
