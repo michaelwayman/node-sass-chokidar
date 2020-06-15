@@ -398,8 +398,8 @@ function renderDir(options, emitter) {
         forEach(
             files,
             function (subject) {
-                emitter.once("done", this.async());
                 if (passesRegex(options, subject)) {
+                    emitter.once('done', this.async());
                     renderFile(subject, options, emitter);
                 }
             },
