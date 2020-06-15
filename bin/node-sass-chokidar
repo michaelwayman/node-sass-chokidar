@@ -429,8 +429,8 @@ function passesRegex(options, file) {
     }
 
     forEach(files, function(subject) {
-      emitter.once('done', this.async());
       if (passesRegex(options, subject)) {
+        emitter.once('done', this.async());
         renderFile(subject, options, emitter);
       }
     }, function(successful, arr) {
