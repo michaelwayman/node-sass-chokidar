@@ -5,6 +5,11 @@ Bug fixes are documented as being part of the "next release" but are made immedi
 
 # Releases
 
+#### 1.5.0
+  - Adds `--recursive` flag back, defaults to true.
+  - Fixed bug with source mapping
+  - Upgraded to use the latest node-sass
+
 #### 1.2.0
   - Adds `--use-polling` flag to allow the use of polling.
 

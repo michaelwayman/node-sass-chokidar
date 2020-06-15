@@ -40,6 +40,7 @@ ____
 ```
     -w, --watch                Watch a directory or file,
     -m, --match-regex          Only watches files in a directory that match the regular expression,
+    -r, --recursive            Recursively watch directories or files
     -o, --output               Output directory,
     -x, --omit-source-map-url  Omit source map URL comment from output,
     -i, --indented-syntax      Treat data from stdin as sass code (versus scss),
