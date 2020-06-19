@@ -228,7 +228,7 @@ describe("cli", function () {
             }, 100);
         });
 
-        it.skip("should emit `warn` on file change when using --watch option", function (done) {
+        it("should emit `warn` on file change when using --watch option", function (done) {
             var src = fixture("simple/tmp.scss");
 
             fs.writeFileSync(src, "");
@@ -248,7 +248,7 @@ describe("cli", function () {
             }, 500);
         });
 
-        it.skip("should emit nothing on file change when using --watch and --quiet options", function (done) {
+        it("should emit nothing on file change when using --watch and --quiet options", function (done) {
             var src = fixture("simple/tmp.scss");
             var didEmit = false;
             fs.writeFileSync(src, "");
@@ -271,7 +271,7 @@ describe("cli", function () {
             }, 500);
         });
 
-        it.skip("should render all watched files", function (done) {
+        it("should render all watched files", function (done) {
             var src = fixture("simple/bar.scss");
 
             fs.writeFileSync(src, "");
@@ -291,7 +291,7 @@ describe("cli", function () {
             }, 500);
         });
 
-        it.skip("should watch the full scss dep tree for a single file (scss)", function (done) {
+        it("should watch the full scss dep tree for a single file (scss)", function (done) {
             var src = fixture("watching/index.scss");
             var foo = fixture("watching/white.scss");
 
@@ -311,7 +311,7 @@ describe("cli", function () {
             }, 500);
         });
 
-        it.skip("should watch the full sass dep tree for a single file (sass)", function (done) {
+        it("should watch the full sass dep tree for a single file (sass)", function (done) {
             var src = fixture("watching/index.sass");
             var foo = fixture("watching/bar.sass");
 
@@ -333,7 +333,7 @@ describe("cli", function () {
     });
 
     describe("node-sass --output directory", function () {
-        it.skip("should watch whole directory", function (done) {
+        it("should watch whole directory", function (done) {
             var destDir = fixture("watching-css-out-01/");
             var srcDir = fixture("watching-dir-01/");
             var srcFile = path.join(srcDir, "index.scss");
@@ -353,7 +353,7 @@ describe("cli", function () {
             }, 500);
         });
 
-        it.skip("should compile all changed files in watched directory", function (done) {
+        it("should compile all changed files in watched directory", function (done) {
             var destDir = fixture("watching-css-out-02/");
             var srcDir = fixture("watching-dir-02/");
             var srcFile = path.join(srcDir, "foo.scss");
