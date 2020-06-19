@@ -11,8 +11,8 @@ jobs:
     - stage: test
       node_js: "14"
       os: linux
-      before_script: npm run lint || exit 1;
-      after_success: npm run-script coverage;
+      # before_script: npm run lint || exit 1;
+      # after_success: npm run-script coverage;
     - stage: platform-test
       node_js: "14"
       os: osx
