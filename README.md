@@ -1,3 +1,6 @@
+# DEPRECATED
+This project had a good run but it looks like https://github.com/sass/dart-sass has now become the better choice. I Don't have the time to maintain this project and from a quick glance dart-sass is also using chokidar for fs normalization. LibSass is Deprecated since October and dart-sass is the new official recommendation. Cheers folks ;)
+
 
 # node-sass-chokidar
 
