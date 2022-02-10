@@ -34,7 +34,7 @@
         "get-stdin": "^4.0.1",
         "glob": "^7.0.3",
         "meow": "^3.7.0",
-        "node-sass": "^4.14.1",
+        "node-sass": "^7.0.0",
         "sass-graph": "^2.2.4",
         "stdout-stream": "^1.4.0"
     },
