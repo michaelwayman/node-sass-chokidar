@@ -1,3 +1,6 @@
+# Updates
+ - 2022-06-30: Major version 2.0.0 is released upgrading to node-sass 7.0.1 for node 16 & 17 compatibility
+
 # DEPRECATED
 This project had a good run but it looks like https://github.com/sass/dart-sass has now become the better choice. I Don't have the time to maintain this project and from a quick glance dart-sass is also using chokidar for fs normalization. LibSass is Deprecated since October and dart-sass is the new official recommendation. Cheers folks ;)
 
@@ -9,7 +12,8 @@ This project had a good run but it looks like https://github.com/sass/dart-sass 
 [![Build Status](https://travis-ci.org/michaelwayman/node-sass-chokidar.svg?branch=master)](https://travis-ci.org/michaelwayman/node-sass-chokidar)
 
   
-**node-sass-chokidar** is compatible with **Node.js** versions *8, 9, 10, 11, 12, 13, 14*
+**node-sass-chokidar v1.5.0** is compatible with **Node.js** versions *8, 9, 10, 11, 12, 13, 14*
+**node-sass-chokidar v2.0.0** is compatible with **Node.js** versions *16, 17*
 
 
 

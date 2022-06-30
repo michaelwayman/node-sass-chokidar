@@ -9,46 +9,16 @@ env:
 jobs:
   include:
     - stage: test
-      node_js: "14"
+      node_js: "17"
       os: linux
     - stage: platform-test
-      node_js: "14"
+      node_js: "17"
       os: osx
-    - stage: platform-test
-      node_js: "13"
+    - stage: test
+      node_js: "16"
       os: linux
     - stage: platform-test
-      node_js: "13"
-      os: osx
-    - stage: platform-test
-      node_js: "12"
-      os: linux
-    - stage: platform-test
-      node_js: "12"
-      os: osx
-    - stage: platform-test
-      node_js: "11"
-      os: linux
-    - stage: platform-test
-      node_js: "11"
-      os: osx
-    - stage: platform-test
-      node_js: "10"
-      os: linux
-    - stage: platform-test
-      node_js: "10"
-      os: osx
-    - stage: platform-test
-      node_js: "9"
-      os: linux
-    - stage: platform-test
-      node_js: "9"
-      os: osx
-    - stage: platform-test
-      node_js: "8"
-      os: linux
-    - stage: platform-test
-      node_js: "8"
+      node_js: "16"
       os: osx
 
 addons:
