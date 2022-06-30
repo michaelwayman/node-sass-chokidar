@@ -1,6 +1,6 @@
 {
     "name": "node-sass-chokidar",
-    "version": "1.5.0",
+    "version": "2.0.0",
     "description": "A thin wrapper around node-sass to replicate the --watch --recursive option using chokidar instead of gaze for significantly better performance",
     "bin": {
         "node-sass-chokidar": "bin/node-sass-chokidar"
